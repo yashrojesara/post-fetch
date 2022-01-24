@@ -87,19 +87,19 @@ const PostList: React.FC = () => {
             {loader && (
                 <CircularProgress style={{ position: "fixed", top: "30%", left: "50%" }} />
             )}
-            <Table className={classes.table} sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table data-testid='table' className={classes.table} sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead className={classes.head}>
                     <TableRow>
-                        <TableCell align="center">Title</TableCell>
-                        <TableCell align="center">URL</TableCell>
-                        <TableCell align="center">Created At</TableCell>
-                        <TableCell align="center">Author</TableCell>
+                        <TableCell data-testid='title' align="center">Title</TableCell>
+                        <TableCell data-testid='url' align="center">URL</TableCell>
+                        <TableCell data-testid='created' align="center">Created At</TableCell>
+                        <TableCell data-testid='author' align="center">Author</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {posts.map((post, index) => {
                         return (
-                           <TableRow className={`${classes.row} ${index % 2 === 0 && classes.rowColor}`} onClick={() => onRowClick(post)} key={index}>
+                           <TableRow data-testid={'row'} className={`${classes.row} ${index % 2 === 0 && classes.rowColor}`} onClick={() => onRowClick(post)} key={index}>
                                 <TableCell align="center">{post.title}</TableCell>
                                 <TableCell align="center">{post.url}</TableCell>
                                 <TableCell align="center">{post.created_at}</TableCell>

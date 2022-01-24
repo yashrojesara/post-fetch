@@ -9,21 +9,20 @@ const useStyles = makeStyles({
     }
 })
 
-
 const Post: React.FC = () => {
     const classes = useStyles();
     const { state } = useLocation();
     const data = state as IPost;
 
     const post = {
-        title: data.title,
-        url: data.url,
-        created_at: data.created_at,
-        author: data.author
+        title: data?.title,
+        url: data?.url,
+        created_at: data?.created_at,
+        author: data?.author
     }
 
     return (
-        <pre className={classes.main}>
+        <pre data-testid='post' className={classes.main}>
             { JSON.stringify(post, null, 2) }
         </pre>
     )
