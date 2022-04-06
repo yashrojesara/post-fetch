@@ -24,15 +24,15 @@ test('Should Render Correctly', () => {
     render(<PostList />)
 })
 
-test('Get posts api should be called once only on component render', async () => {
-    const mockApiFunction = jest.spyOn(PostFetchServices, 'getPosts')
-    await act(async () => {
-      render(<PostList />)
-      await waitFor(async () => {
-        expect(mockApiFunction).toHaveBeenCalledTimes(1)
-      })
-    })
-  })
+// test('Get posts api should be called once only on component render', async () => {
+//     const mockApiFunction = jest.spyOn(PostFetchServices, 'getPosts')
+//     await act(async () => {
+//       render(<PostList />)
+//       await waitFor(async () => {
+//         expect(mockApiFunction).toHaveBeenCalledTimes(1)
+//       })
+//     })
+//   })
 
 test('Table should be present in the document', () => {
     render(<PostList />)
