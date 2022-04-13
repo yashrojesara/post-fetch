@@ -1,11 +1,11 @@
 import { makeStyles } from "@mui/styles";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPosts } from "./service";
 import { IPost } from "./types";
 import { CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { useNavigate } from 'react-router-dom';
-import { useInView } from "react-intersection-observer";
+import useIntersectionObserver from './useIntersection';
 
 const useStyles = makeStyles({   
     table: {
@@ -28,8 +28,11 @@ const PostList: React.FC = () => {
     const [posts, setPosts] = useState<IPost[]>([]);
     const [loader, setLoader] = useState(false);
     const [isLastPage, setIsLastPage] = useState(false)
-    const [lastPost, isLastPostVisible] = useInView();
     const navigate = useNavigate();
+
+    const ref = useRef<HTMLDivElement | null>(null)
+    const entry = useIntersectionObserver(ref, {})
+    const isVisible = !!entry?.isIntersecting
 
     useEffect(() => {
         let interval: any;
@@ -37,7 +40,7 @@ const PostList: React.FC = () => {
             fetchPost();
             interval = setInterval(() => {
                 fetchPost();
-            }, 100000)            
+            }, 10000)            
         }
         
         return(() => {
@@ -47,7 +50,6 @@ const PostList: React.FC = () => {
 
     const fetchPost = async() => {
         setLoader(true);
-        console.log(currentPage.current)
         await getPosts(currentPage.current)
             .then(res => {                
                 currentPage.current += 1;
@@ -66,21 +68,17 @@ const PostList: React.FC = () => {
             })
     }
 
-    useEffect(() => {
-        if (isLastPostVisible && posts?.length > 0 && !isLastPage) {
-          setLoader(true);
-          fetchPost();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isLastPostVisible]);
-
-    const postEndingRef = useCallback((node) => {
-        lastPost(node);
-    },[lastPost]);
-
     const onRowClick = (post: IPost) => {
         navigate('/PostDetail', { state: post })
     }
+
+    useEffect(() => {
+        if (isVisible && posts.length > 0) {
+            console.log('here')
+            fetchPost();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isVisible])
 
     return (
         <TableContainer component={Paper}>
@@ -97,21 +95,21 @@ const PostList: React.FC = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {posts.map((post, index) => {
+                    {posts.map((post, index) => {                        
                         return (
-                           <TableRow data-testid={'row'} className={`${classes.row} ${index % 2 === 0 && classes.rowColor}`} onClick={() => onRowClick(post)} key={index}>
+                            <TableRow data-testid={'row'} className={`${classes.row} ${index % 2 === 0 && classes.rowColor}`} onClick={() => onRowClick(post)} key={index}>
                                 <TableCell align="center">{post.title}</TableCell>
                                 <TableCell align="center">{post.url}</TableCell>
                                 <TableCell align="center">{post.created_at}</TableCell>
                                 <TableCell align="center">{post.author}</TableCell>
-                            </TableRow>
+                            </TableRow>                                                     
                         )})
                     }
                 </TableBody>
-            </Table>
-            <div ref={postEndingRef} style={{ visibility: 'hidden' }}>
+            </Table>   
+             <div ref={ref} style={{ visibility: 'hidden' }}>
                 Last Post
-            </div>
+            </div>        
         </TableContainer>
     )
 }
